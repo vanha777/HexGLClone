@@ -6,6 +6,8 @@
     return document.getElementById(_);
   };
 
+  window.shop = new bkcore.hexgl.Shop(null);
+
   init = function(controlType, quality, hud, godmode) {
     var hexGL, progressbar;
     hexGL = new bkcore.hexgl.HexGL({
@@ -23,6 +25,10 @@
       track: 'Cityscape'
     });
     window.hexGL = hexGL;
+    console.log('Creating shop...'); // Debug shop creation
+    window.shop = new bkcore.hexgl.Shop(hexGL);
+    console.log('Shop created'); // Debug shop created
+    
     progressbar = $('progressbar');
     return hexGL.load({
       onLoad: function() {
@@ -112,5 +118,19 @@
       return $('step-2').style.backgroundImage = "url(css/help-" + s[0][3] + ".png)";
     };
   }
+
+  $('s-shop').onclick = function(e) {
+    console.log('Shop button clicked');
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var shopDialog = document.getElementById('shop-dialog');
+    var shopOverlay = document.querySelector('.shop-overlay');
+    
+    if (shopDialog && shopOverlay) {
+        shopDialog.classList.add('visible');
+        shopOverlay.classList.add('visible');
+    }
+  };
 
 }).call(this);

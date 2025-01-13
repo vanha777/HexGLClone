@@ -51,7 +51,8 @@ try {
         'geometries',
         'models',
         'sounds',
-        'fonts'
+        'fonts',
+        'textures.full'
     ];
 
     // Copy all directories
@@ -75,7 +76,8 @@ try {
         'textures.full/tracks/cityscape/start',
         'textures.full/bonus/base',
         'textures.full/skybox/dawnclouds',
-        'textures.full/hud'
+        'textures.full/hud',
+        'textures.full/shop'
     ];
 
     requiredTexturePaths.forEach(dir => {
@@ -126,6 +128,38 @@ try {
             console.log(`Copied ${file}`);
         } else {
             console.log(`Warning: File ${file} not found`);
+        }
+    });
+
+    // Create placeholder images for shop items if they don't exist
+    function createPlaceholderImage(filePath) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 80;
+        canvas.height = 80;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw placeholder
+        ctx.fillStyle = '#3498db';
+        ctx.fillRect(0, 0, 80, 80);
+        
+        // Save as PNG
+        const buffer = canvas.toBuffer('image/png');
+        fs.writeFileSync(filePath, buffer);
+    }
+
+    // Add this after creating directories
+    const shopImages = [
+        'textures.full/shop/boost.png',
+        'textures.full/shop/shield.png',
+        'textures.full/shop/handling.png'
+    ];
+
+    shopImages.forEach(imagePath => {
+        const fullPath = path.join('dist', imagePath);
+        ensureDirectoryExistence(fullPath);
+        if (!fs.existsSync(fullPath)) {
+            createPlaceholderImage(fullPath);
+            console.log(`Created placeholder image: ${fullPath}`);
         }
     });
 
