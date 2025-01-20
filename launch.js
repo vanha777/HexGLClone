@@ -232,10 +232,27 @@
       console.log('Logout button clicked');
       e.preventDefault();
       e.stopPropagation();
-      user.remove();
       document.getElementById('username-display').classList.remove('visible');
       document.getElementById('username-display').style.display = 'none';
       document.getElementById('username-text').textContent = 'Guest';
+      // Initialize user
+      let user = new User('Guest'); // Default username
+      user.remove();
+      user.load(); // Load user data
+      // Check if user data exists
+      if (!user.username || user.username === 'Guest') {
+        console.log('No user data, showing login form');
+        document.getElementById('username-display').classList.remove('visible');
+        document.getElementById('username-display').style.display = 'none';
+        // Show login form and show game menu
+        var loginForm = document.getElementById('login-form');
+        var loginOverlay = document.querySelector('.login-overlay');
+        if (loginForm && loginOverlay) {
+          loginForm.style.display = 'block'; // Ensure the login form is hidden
+          loginForm.classList.add('visible');
+          loginOverlay.classList.add('visible');
+        }
+      }
     }
 
     // Existing code for handling other events...
