@@ -138,18 +138,21 @@
 
     // User class to manage user data
     class User {
-      constructor(username) {
-        this.username = username;
+      constructor() {
+        this.username = null;
+        this.profile = null;
+        this.wallet = null;
         this.level = 1; // Default level
         this.coins = 0; // Default coins
         this.score = 0; // Default score
       }
 
-      // Load user data from local storage
       load() {
         const userData = JSON.parse(localStorage.getItem('user'));
         if (userData) {
           this.username = userData.username;
+          this.profile = userData.profile;
+          this.wallet = userData.wallet;
           this.level = userData.level;
           this.coins = userData.coins;
           this.score = userData.score;
@@ -167,97 +170,43 @@
       }
     }
 
-    class Game {
-      constructor() {
-        this.developer = "developer@gmail.com"; // Default level
-        this.token = {}; // Default
-        this.collections = {}; // Default
-      }
-
-      // Load user data from local storage
-      load() {
-        const gameData = JSON.parse(localStorage.getItem('game'));
-        if (gameData) {
-          this.developer = gameData.developer;
-          this.token = gameData.token;
-          this.collections = gameData.collections;
-        }
-      }
-
-      // Save user data to local storage
-      save() {
-        localStorage.setItem('game', JSON.stringify(this));
-      }
-
-      // Remove user data from local storage
-      remove() {
-        localStorage.removeItem('game');
-      }
-    }
-
     // Initialize user
-    let user = new User('Guest'); // Default username
+    let user = new User(); // Default username
     user.load(); // Load user data
 
     // Check if user data exists
-    if (!user.username || user.username === 'Guest') {
-      console.log('No user data, showing login form');
-      document.getElementById('username-display').classList.remove('visible');
-      document.getElementById('username-display').style.display = 'none';
-      // Show login form and show game menu
-      var loginForm = document.getElementById('login-form');
-      var loginOverlay = document.querySelector('.login-overlay');
-      if (loginForm && loginOverlay) {
-        loginForm.style.display = 'block'; // Ensure the login form is hidden
-        loginForm.classList.add('visible');
-        loginOverlay.classList.add('visible');
-      }
+    // if (!user.username || user.username === 'Guest') {
+    //   console.log('No user data, showing login form');
+    //   document.getElementById('username-display').classList.remove('visible');
+    //   document.getElementById('username-display').style.display = 'none';
+    //   // Show login form and show game menu
+    //   var loginForm = document.getElementById('login-form');
+    //   var loginOverlay = document.querySelector('.login-overlay');
+    //   if (loginForm && loginOverlay) {
+    //     loginForm.style.display = 'block'; // Ensure the login form is hidden
+    //     loginForm.classList.add('visible');
+    //     loginOverlay.classList.add('visible');
+    //   }
 
-    } else {
-      console.log('User data exists, showing game menu', user.username);
-      // Hide login form and show game menu
-      var loginForm = document.getElementById('login-form');
-      var loginOverlay = document.querySelector('.login-overlay');
-      if (loginForm && loginOverlay) {
-        loginForm.style.display = 'none'; // Ensure the login form is hidden
-        loginForm.classList.remove('visible');
-        loginOverlay.classList.remove('visible');
-      }
-      document.getElementById('username-text').textContent = user.username;
-      document.getElementById('username-display').classList.add('visible');
-      document.getElementById('username-display').style.display = 'block';
-      // Update the shop with user coins
-      if (window.shop) {
-        window.shop.coins = user.coins;
-        document.getElementById('coin-count').textContent = user.coins;
-      }
-    }
-
-    // Initialize game
-    let game = new Game(); // Default username
-    game.load(); // Load user data
-
-    if (!game.token) {
-      console.log('No game data, fetching token data');
-      fetch(`https://metaloot-cloud-d4ec.shuttle.app/v1/api/game/${game.developer}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-          }
-          let res = response.json();
-          console.log('Game Developer Data:', res);
-          let token = {
-            "name": res.account.data.token_name,
-            "symbol": res.account.data.token_symbol,
-            "image": res.account.data.token_image,
-          };
-          game.token = token;
-          game.save();
-        })
-        .catch(error => {
-          console.error('There was a problem with the fetch operation:', error);
-        });
-    }
+    // } else {
+    //   console.log('User data exists, showing game menu', user.username);
+    //   // Hide login form and show game menu
+    //   var loginForm = document.getElementById('login-form');
+    //   var loginOverlay = document.querySelector('.login-overlay');
+    //   if (loginForm && loginOverlay) {
+    //     loginForm.style.display = 'none'; // Ensure the login form is hidden
+    //     loginForm.classList.remove('visible');
+    //     loginOverlay.classList.remove('visible');
+    //   }
+    //   document.getElementById('username-text').textContent = user.username;
+    //   document.getElementById('username-display').classList.add('visible');
+    //   document.getElementById('username-display').style.display = 'block';
+    //   // Update the shop with user coins
+    //   if (window.shop) {
+    //     window.shop.coins = user.coins;
+    //     document.getElementById('coin-count').textContent = user.coins;
+    //   }
+    // }
 
     // Handle login button click
     $('login-button').onclick = function () {

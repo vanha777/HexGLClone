@@ -118,6 +118,40 @@
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
 
+    class User {
+      constructor() {
+        this.username = null;
+        this.profile = null;
+        this.wallet = null;
+        this.level = 1; // Default level
+        this.coins = 0; // Default coins
+        this.score = 0; // Default score
+      }
+
+      // Load user data from local storage
+      load() {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (userData) {
+          this.username = userData.username;
+          this.profile = userData.profile;
+          this.wallet = userData.wallet;
+          this.level = userData.level;
+          this.coins = userData.coins;
+          this.score = userData.score;
+        }
+      }
+
+      // Save user data to local storage
+      save() {
+        localStorage.setItem('user', JSON.stringify(this));
+      }
+
+      // Remove user data from local storage
+      remove() {
+        localStorage.removeItem('user');
+      }
+    }
+
     // Add event listener for SSO messages
     window.addEventListener('message', handleSSOMessages, false);
     // Define the handleSSOMessages function
@@ -133,9 +167,117 @@
       console.log("Received SSO message:", data);
       console.log("Received SSO origin:", origin);
       // Add your logic here to handle the SSO message
+      let user = new User();
+      user.username = data.username;
+      user.profile = data.profile_picture;
+      user.wallet = data.wallet;
+      user.coins = data.assets[0].tokens.balance;
+      user.save();
     }
 
     console.log('Initializing load, checking game data');
+    class Game {
+      constructor() {
+        this.developer = "developer@gmail.com"; // Default level
+        this.token = {}; // Default
+        this.collections = {}; // Default
+      }
+
+      // Load user data from local storage
+      load() {
+        const gameData = JSON.parse(localStorage.getItem('game'));
+        if (gameData) {
+          this.developer = gameData.developer;
+          this.token = gameData.token;
+          this.collections = gameData.collections;
+        }
+      }
+
+      // Save user data to local storage
+      save() {
+        localStorage.setItem('game', JSON.stringify(this));
+      }
+
+      // Remove user data from local storage
+      remove() {
+        localStorage.removeItem('game');
+      }
+    }
+    console.log('here');
+    // Initialize game
+    let game = new Game(); // Default username
+    game.load(); // Load user data
+
+    // Initialize game
+    let user = new User(); // Default username
+    user.load(); // Load user data
+    updateUI();
+
+    console.log('here 1 ', game.token);
+    if (Object.keys(game.token).length === 0) {
+      handleGetGameData();
+    }
+    async function handleGetGameData(event) {
+      console.log('here 2');
+      console.log('No game data, fetching token data');
+      let res = await fetch(`https://metaloot-cloud-d4ec.shuttle.app/v1/api/game/${game.developer}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+          }
+          return response.json();
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
+      console.log('Game Developer Data:', res);
+      let token = {
+        "name": res.account.data.token_name,
+        "symbol": res.account.data.token_symbol,
+        "image": res.account.data.token_image,
+      };
+      game.token = token;
+      game.save();
+    }
+    // Function to update the UI with data from localStorage
+    function updateUI() {
+      // Check if user data exists
+      if (!user.username || user.username === 'Guest') {
+        console.log('No user data, showing login form');
+        document.getElementById('username-display').classList.remove('visible');
+        document.getElementById('username-display').style.display = 'none';
+        // Show login form and show game menu
+        var loginForm = document.getElementById('login-form');
+        var loginOverlay = document.querySelector('.login-overlay');
+        if (loginForm && loginOverlay) {
+          loginForm.style.display = 'block'; // Ensure the login form is hidden
+          loginForm.classList.add('visible');
+          loginOverlay.classList.add('visible');
+        }
+
+      } else {
+        console.log('User data exists, showing game menu', user.username);
+        // Hide login form and show game menu
+        var loginForm = document.getElementById('login-form');
+        var loginOverlay = document.querySelector('.login-overlay');
+        if (loginForm && loginOverlay) {
+          loginForm.style.display = 'none'; // Ensure the login form is hidden
+          loginForm.classList.remove('visible');
+          loginOverlay.classList.remove('visible');
+        }
+        document.getElementById('username-text').textContent = user.username;
+        document.getElementById('username-display').classList.add('visible');
+        document.getElementById('username-display').style.display = 'block';
+        document.getElementById('profile-picture').src = user.profile;
+        document.getElementById('coin-count').textContent = user.coins;
+        // Update the shop with user coins
+        if (window.shop) {
+          window.shop.coins = user.coins;
+          document.getElementById('coin-count').textContent = user.coins;
+        }
+      }
+    }
+
   </script>
 </head>
 
@@ -296,12 +438,47 @@
     </div>
   </div>
 
-  <div id="username-display"
-    style="position: fixed; top: 30px; right: 10px; background-color: #007bff; color: white; font-size: 16px; padding: 15px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); z-index: 999999;">
-    Username: <span id="username-text">Guest</span><br>
-    Coins: <span id="coin-count">0</span>
-    <button id="logout-button">Logout</button>
+  <div id="username-display" style="
+    position: fixed;
+    top: 30px;
+    right: 10px;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 999999;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  ">
+
+    <img id="profile-picture" src="path/to/profile-picture.png" alt="Profile Picture" style="
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    ">
+
+    <div style="display: flex; flex-direction: column;">
+      <span>Username: <span id="username-text">Guest</span></span>
+      <span>Coins: <span id="coin-count">0</span></span>
+    </div>
+
+    <button id="logout-button" style="
+      margin-left: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+    ">
+      Logout
+    </button>
   </div>
+
 
 </body>
 
