@@ -120,13 +120,12 @@
 
     // Add event listener for SSO messages
     window.addEventListener('message', handleSSOMessages, false);
-
     // Define the handleSSOMessages function
     function handleSSOMessages(event) {
       // Check the origin of the message for security
-      // if (event.origin !== "https://your-expected-origin.com") {
-      //   return; // Ignore messages from unexpected origins
-      // }
+      if (event.origin !== "https://metaloot-cloud-d4ec.shuttle.app") {
+        return; // Ignore messages from unexpected origins
+      }
       // Handle the message data
       const data = event.data;
       const origin = event.origin;

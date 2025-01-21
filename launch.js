@@ -167,6 +167,34 @@
       }
     }
 
+    class Game {
+      constructor() {
+        this.developer = "developer@gmail.com"; // Default level
+        this.token = {}; // Default
+        this.collections = {}; // Default
+      }
+
+      // Load user data from local storage
+      load() {
+        const gameData = JSON.parse(localStorage.getItem('game'));
+        if (gameData) {
+          this.developer = gameData.developer;
+          this.token = gameData.token;
+          this.collections = gameData.collections;
+        }
+      }
+
+      // Save user data to local storage
+      save() {
+        localStorage.setItem('game', JSON.stringify(this));
+      }
+
+      // Remove user data from local storage
+      remove() {
+        localStorage.removeItem('game');
+      }
+    }
+
     // Initialize user
     let user = new User('Guest'); // Default username
     user.load(); // Load user data
@@ -203,6 +231,32 @@
         window.shop.coins = user.coins;
         document.getElementById('coin-count').textContent = user.coins;
       }
+    }
+
+    // Initialize game
+    let game = new Game(); // Default username
+    game.load(); // Load user data
+
+    if (!game.token) {
+      console.log('No game data, fetching token data');
+      fetch(`https://metaloot-cloud-d4ec.shuttle.app/v1/api/game/${game.developer}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+          }
+          let res = response.json();
+          console.log('Game Developer Data:', res);
+          let token = {
+            "name": res.account.data.token_name,
+            "symbol": res.account.data.token_symbol,
+            "image": res.account.data.token_image,
+          };
+          game.token = token;
+          game.save();
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
     }
 
     // Handle login button click
