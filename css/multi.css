@@ -419,6 +419,8 @@ body {
 .coins {
   font-size: 1.2em;
   color: #f1c40f;
+  margin-left: 10px; /* Added left margin */
+  margin-right: 10px; 
 }
 
 #close-shop {

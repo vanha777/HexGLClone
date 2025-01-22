@@ -294,6 +294,13 @@
         console.log('No user data 1', user);
       } else {
         console.log('User data exists, showing game menu', user);
+        // document.querySelectorAll('.token-count').forEach(tokenCount => {
+        //   tokenCount.textContent = game.token.symbol;
+        // });
+        // document.querySelectorAll('.token-name').forEach(tokenName => {
+        //   tokenName.textContent = game.token.symbol;
+        // });
+
         // Hide login form and show game menu
         var loginForm = document.getElementById('login-form');
         var loginOverlay = document.querySelector('.login-overlay');
@@ -321,6 +328,11 @@
           };
         }
         document.getElementById('coin-count').textContent = user.coins.toString(); // Convert coins to string for display
+        if (game.token.symbol) {
+          document.querySelectorAll('.token-name').forEach(tokenName => {
+            tokenName.textContent = game.token.symbol + ":";
+          });
+        }
 
         // Update the shop with user coins
         // if (window.shop) {
@@ -399,7 +411,21 @@
         if (shopDialog && shopOverlay) {
           shopDialog.classList.add('visible');
           shopOverlay.classList.add('visible');
+          //Update Text Data
           document.getElementById('coin-count').textContent = balance;
+          document.getElementById('token-name').textContent = game.token.symbol;
+          if (game.token.image) {
+            // Check if token_image is a valid URL
+            const img = new Image();
+            img.src = game.token.image;
+            img.onload = function () {
+              document.getElementById('token-logo').src = game.token.image; // Update profile picture
+            };
+            img.onerror = function () {
+              console.log('Invalid profile picture URL, using default image');
+              document.getElementById('token-logo').src = 'https://tzqzzuafkobkhygtccse.supabase.co/storage/v1/object/public/biz_touch/crypto-ql/rb_27087.png'; // Set a default image
+            };
+          }
         }
       }
 
@@ -458,7 +484,11 @@
         </div>
       </div>
       <div class="shop-footer">
-        <div class="coins">Coins: <span id="coin-count">500</span></div>
+        <div class="token-info" style="display: flex; align-items: center;">
+          <img id="token-logo" src="" alt="Token Logo" style="width: 40px; height: 40px; margin-right: 5px;">
+          <span id="coin-count" style="margin-left: 10px;">0</span>
+          <span id="token-name" class="coins" style="margin-left: 10px;">Token Name</span>
+        </div>
         <button id="close-shop">Close</button>
       </div>
     </div>
@@ -613,7 +643,11 @@
       margin-right: 10px;">
     <div style="display: flex; flex-direction: column;">
       <span>Username: <span id="username-text">Guest</span></span>
-      <span>Coins: <span id="coin-count">0</span></span>
+      <div style="display: flex; flex-direction: row;">
+        <span class="token-name">Coins: </span>
+        <span id="coin-count" style="margin-left: 10px;">0</span>
+      </div>
+
     </div>
     <button id="logout-button" style="
     margin-left: 10px;
