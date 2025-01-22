@@ -207,6 +207,11 @@
       }
       let balance = user.coins.toString();
       document.getElementById('coin-count').textContent = balance; // Convert coins to string for display
+      if (game.token.symbol) {
+        document.querySelectorAll('.token-name').forEach(tokenName => {
+          tokenName.textContent = game.token.symbol + ":";
+        });
+      }
 
     }
 
