@@ -133,8 +133,8 @@
     }
   };
 
-  document.addEventListener('DOMContentLoaded', function () {
-    console.log('Initializing load, checking user inner');
+  // document.addEventListener('DOMContentLoaded', function () {
+  //   console.log('Initializing load, checking user inner');
 
     // User class to manage user data
     // class User {
@@ -272,6 +272,6 @@
     //     shopOverlay.classList.add('visible');
     //   }
     // };
-  });
+  // });
 
 }).call(this);
