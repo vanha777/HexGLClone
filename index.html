@@ -119,12 +119,12 @@
     })();
 
     class User {
-      constructor() {
-        this.username = null;
-        this.profile = null;
-        this.wallet = null;
+      constructor(username) {
+        this.username = username;
+        this.profile = '';
+        this.wallet = '';
         this.level = 1; // Default level
-        this.coins = 0; // Default coins
+        this.coins = 1; // Default coins
         this.score = 0; // Default score
       }
 
@@ -167,12 +167,54 @@
       console.log("Received SSO message:", data);
       console.log("Received SSO origin:", origin);
       // Add your logic here to handle the SSO message
-      let user = new User();
-      user.username = data.username;
+      let user = new User(data.username);
       user.profile = data.profile_picture;
       user.wallet = data.wallet;
       user.coins = data.assets[0].tokens.balance;
       user.save();
+      console.log('user data saved ', user);
+
+      // Wait until the DOM is loaded - set user profile display
+      document.addEventListener('DOMContentLoaded', function () {
+        console.log('loading user profile on oauth', user);
+        var usernameElement = user.username;
+        var username = usernameElement ? usernameElement.value : ''; // Check if the element exists
+        console.log('username', username);
+        if (username) {
+          console.log('User logged in via oauth:', user);
+          // Hide login form and show game menu
+          var loginForm = document.getElementById('login-form');
+          var loginOverlay = document.querySelector('.login-overlay');
+          if (loginForm && loginOverlay) {
+            loginForm.style.display = 'none'; // Ensure the login form is hidden
+            loginForm.classList.remove('visible');
+            loginOverlay.classList.remove('visible');
+          }
+          // Show game menu
+          // document.getElementById('step-1').style.display = 'block'; 
+
+          // Display user profile
+          document.getElementById('username-display').classList.add('visible');
+          document.getElementById('username-display').style.display = 'block';
+
+          // Update User Profile Display
+          document.getElementById('username-text').textContent = user.username; // Ensure user.username is set
+          if (user.profile) {
+            // Check if user.profile is a valid URL
+            const img = new Image();
+            img.src = user.profile;
+            img.onload = function () {
+              document.getElementById('profile-picture').src = user.profile; // Update profile picture
+            };
+            img.onerror = function () {
+              console.log('Invalid profile picture URL, using default image');
+              document.getElementById('profile-picture').src = 'https://tzqzzuafkobkhygtccse.supabase.co/storage/v1/object/public/biz_touch/crypto-ql/ICON.png'; // Set a default image
+            };
+          }
+          document.getElementById('coin-count').textContent = user.coins.toString(); // Convert coins to string for display
+        }
+      })
+
     }
 
     console.log('Initializing load, checking game data');
@@ -203,26 +245,20 @@
         localStorage.removeItem('game');
       }
     }
-    console.log('here');
     // Initialize game
     let game = new Game(); // Default username
     game.load(); // Load user data
-
-    // Initialize game
-    let user = new User(); // Default username
-    user.load(); // Load user data
-    updateUI();
-
-    console.log('here 1 ', game.token);
+    console.log('game data loaded ', game);
     if (Object.keys(game.token).length === 0) {
+      console.log('no game data, fetching game data');
       handleGetGameData();
     }
+
     async function handleGetGameData(event) {
-      console.log('here 2');
-      console.log('No game data, fetching token data');
       let res = await fetch(`https://metaloot-cloud-d4ec.shuttle.app/v1/api/game/${game.developer}`)
         .then(response => {
           if (!response.ok) {
+            console.log('network response was not ok ', response.statusText);
             throw new Error('Network response was not ok ' + response.statusText);
           }
           return response.json();
@@ -239,13 +275,21 @@
       game.token = token;
       game.save();
     }
-    // Function to update the UI with data from localStorage
-    function updateUI() {
+    console.log('saved game data');
+
+    // Initialize user
+    let user = new User('Guest'); // Default username
+    user.load(); // Load user data
+    console.log('user data loaded ', user);
+
+    document.addEventListener('DOMContentLoaded', function () {
       // Check if user data exists
-      if (!user.username || user.username === 'Guest') {
-        console.log('No user data, showing login form');
+      if (user.username === 'Guest') {
+        console.log('No user data, showing login form', user);
+        // Not display user profile
         document.getElementById('username-display').classList.remove('visible');
         document.getElementById('username-display').style.display = 'none';
+        console.log('No user data 0', user);
         // Show login form and show game menu
         var loginForm = document.getElementById('login-form');
         var loginOverlay = document.querySelector('.login-overlay');
@@ -254,9 +298,9 @@
           loginForm.classList.add('visible');
           loginOverlay.classList.add('visible');
         }
-
+        console.log('No user data 1', user);
       } else {
-        console.log('User data exists, showing game menu', user.username);
+        console.log('User data exists, showing game menu', user);
         // Hide login form and show game menu
         var loginForm = document.getElementById('login-form');
         var loginOverlay = document.querySelector('.login-overlay');
@@ -265,18 +309,132 @@
           loginForm.classList.remove('visible');
           loginOverlay.classList.remove('visible');
         }
-        document.getElementById('username-text').textContent = user.username;
+        console.log('user data', user);
+        // Display user profile
         document.getElementById('username-display').classList.add('visible');
         document.getElementById('username-display').style.display = 'block';
-        document.getElementById('profile-picture').src = user.profile;
-        document.getElementById('coin-count').textContent = user.coins;
+
+        document.getElementById('username-text').textContent = user.username; // Ensure user.username is set
+        if (user.profile) {
+          // Check if user.profile is a valid URL
+          const img = new Image();
+          img.src = user.profile;
+          img.onload = function () {
+            document.getElementById('profile-picture').src = user.profile; // Update profile picture
+          };
+          img.onerror = function () {
+            console.log('Invalid profile picture URL, using default image');
+            document.getElementById('profile-picture').src = 'https://tzqzzuafkobkhygtccse.supabase.co/storage/v1/object/public/biz_touch/crypto-ql/ICON.png'; // Set a default image
+          };
+        }
+        document.getElementById('coin-count').textContent = user.coins.toString(); // Convert coins to string for display
+
         // Update the shop with user coins
-        if (window.shop) {
-          window.shop.coins = user.coins;
-          document.getElementById('coin-count').textContent = user.coins;
+        // if (window.shop) {
+        //   window.shop.coins = user.coins;
+        //   document.getElementById('coin-count').textContent = user.coins;
+        // }
+      }
+      console.log('finished initilize data', game, user);
+      // Handle login button click
+      document.getElementById('login-button').onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('login button clicked', user);
+        var usernameElement = document.getElementById('username');
+        var username = usernameElement ? usernameElement.value : ''; // Check if the element exists
+        console.log('username', username);
+        if (username) {
+          user = new User(username);
+          user.save(); // Save user data
+          console.log('User logged in:', user);
+
+          // Hide login form and show game menu
+          var loginForm = document.getElementById('login-form');
+          var loginOverlay = document.querySelector('.login-overlay');
+          if (loginForm && loginOverlay) {
+            loginForm.style.display = 'none'; // Ensure the login form is hidden
+            loginForm.classList.remove('visible');
+            loginOverlay.classList.remove('visible');
+          }
+          // Show game menu
+          // document.getElementById('step-1').style.display = 'block'; 
+
+          // Display user profile
+          document.getElementById('username-display').classList.add('visible');
+          document.getElementById('username-display').style.display = 'block';
+
+          document.getElementById('username-text').textContent = user.username;
+        }
+      };
+
+      document.getElementById('logout-button').onclick = function (e) {
+        console.log('Logout button clicked');
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('username-display').classList.remove('visible');
+        document.getElementById('username-display').style.display = 'none';
+        document.getElementById('username-text').textContent = 'Guest';
+        // Initialize user
+        let user = new User('Guest'); // Default username
+        user.remove();
+        user.load(); // Load user data
+        // Check if user data exists
+        if (!user.username || user.username === 'Guest') {
+          console.log('No user data, showing login form');
+          document.getElementById('username-display').classList.remove('visible');
+          document.getElementById('username-display').style.display = 'none';
+          // Show login form and show game menu
+          var loginForm = document.getElementById('login-form');
+          var loginOverlay = document.querySelector('.login-overlay');
+          if (loginForm && loginOverlay) {
+            loginForm.style.display = 'block'; // Ensure the login form is hidden
+            loginForm.classList.add('visible');
+            loginOverlay.classList.add('visible');
+          }
         }
       }
-    }
+
+      document.getElementById('s-shop').onclick = function (e) {
+        let balance = user.coins.toString();
+        console.log('Shop button clicked, user balance:', balance);
+        e.preventDefault();
+        e.stopPropagation();
+        var shopDialog = document.getElementById('shop-dialog');
+        var shopOverlay = document.querySelector('.shop-overlay');
+
+        if (shopDialog && shopOverlay) {
+          shopDialog.classList.add('visible');
+          shopOverlay.classList.add('visible');
+          document.getElementById('coin-count').textContent = balance;
+        }
+      }
+
+      document.getElementById('close-shop').onclick = function (e) {
+        console.log('Close Shop button clicked');
+        e.preventDefault();
+        e.stopPropagation();
+        var shopDialog = document.getElementById('shop-dialog');
+        var shopOverlay = document.querySelector('.shop-overlay');
+
+        if (shopDialog && shopOverlay) {
+          shopDialog.classList.remove('visible');
+          shopOverlay.classList.remove('visible');
+        }
+      }
+
+      document.querySelectorAll('.buy-button').forEach(button => {
+        button.onclick = function (e) {
+          e.preventDefault();
+          const itemId = this.getAttribute('data-id'); // Access data-id
+          const itemPrice = this.getAttribute('data-price'); // Access data-price
+          console.log(`Item ID: ${itemId}, Price: ${itemPrice}`);
+          // Add your logic for purchasing the item here
+        };
+      });
+
+    })
+
 
   </script>
 </head>
@@ -291,19 +449,19 @@
           <!-- <img src="textures.full/shop/boost.png" alt="Speed Boost"> -->
           <h3>Speed Boost</h3>
           <p>Increase your max speed by 10%</p>
-          <button class="buy-button" data-price="100">Buy for 100 coins</button>
+          <button class="buy-button" data-id="boost" data-price="100">Buy for 100 coins</button>
         </div>
         <div class="shop-item" data-id="shield">
           <img src="textures.full/shop/shield.png" alt="Shield">
           <h3>Shield</h3>
           <p>Protect against wall damage</p>
-          <button class="buy-button" data-price="200">Buy for 200 coins</button>
+          <button class="buy-button" data-id="shield" data-price="200">Buy for 200 coins</button>
         </div>
         <div class="shop-item" data-id="handling">
           <img src="textures.full/shop/handling.png" alt="Better Handling">
           <h3>Better Handling</h3>
           <p>Improve ship control by 15%</p>
-          <button class="buy-button" data-price="150">Buy for 150 coins</button>
+          <button class="buy-button" data-id="handling" data-price="150">Buy for 150 coins</button>
         </div>
       </div>
       <div class="shop-footer">
@@ -396,7 +554,7 @@
 
   <script src="bkcore/hexgl/Shop.js"></script>
 
-  <script src="launch.js"></script>
+  <!-- <script src="launch.js"></script> -->
 
   <div class="login-overlay"></div>
   <div id="login-form">
@@ -453,28 +611,25 @@
     flex-direction: row;
     align-items: center;
   ">
-
-    <img id="profile-picture" src="path/to/profile-picture.png" alt="Profile Picture" style="
+    <img id="profile-picture"
+      src="https://tzqzzuafkobkhygtccse.supabase.co/storage/v1/object/public/biz_touch/crypto-ql/ICON.png"
+      alt="Profile Picture" style="
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      margin-right: 10px;
-    ">
-
+      margin-right: 10px;">
     <div style="display: flex; flex-direction: column;">
       <span>Username: <span id="username-text">Guest</span></span>
       <span>Coins: <span id="coin-count">0</span></span>
     </div>
-
     <button id="logout-button" style="
-      margin-left: 10px;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background-color 0.2s ease;
-    ">
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;">
       Logout
     </button>
   </div>
