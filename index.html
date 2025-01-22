@@ -174,47 +174,44 @@
       user.save();
       console.log('user data saved ', user);
 
-      // Wait until the DOM is loaded - set user profile display
-      document.addEventListener('DOMContentLoaded', function () {
-        console.log('loading user profile on oauth', user);
-        var usernameElement = user.username;
-        var username = usernameElement ? usernameElement.value : ''; // Check if the element exists
-        console.log('username', username);
-        if (username) {
-          console.log('User logged in via oauth:', user);
-          // Hide login form and show game menu
-          var loginForm = document.getElementById('login-form');
-          var loginOverlay = document.querySelector('.login-overlay');
-          if (loginForm && loginOverlay) {
-            loginForm.style.display = 'none'; // Ensure the login form is hidden
-            loginForm.classList.remove('visible');
-            loginOverlay.classList.remove('visible');
-          }
-          // Show game menu
-          // document.getElementById('step-1').style.display = 'block'; 
-
-          // Display user profile
-          document.getElementById('username-display').classList.add('visible');
-          document.getElementById('username-display').style.display = 'block';
-
-          // Update User Profile Display
-          document.getElementById('username-text').textContent = user.username; // Ensure user.username is set
-          if (user.profile) {
-            // Check if user.profile is a valid URL
-            const img = new Image();
-            img.src = user.profile;
-            img.onload = function () {
-              document.getElementById('profile-picture').src = user.profile; // Update profile picture
-            };
-            img.onerror = function () {
-              console.log('Invalid profile picture URL, using default image');
-              document.getElementById('profile-picture').src = 'https://tzqzzuafkobkhygtccse.supabase.co/storage/v1/object/public/biz_touch/crypto-ql/ICON.png'; // Set a default image
-            };
-          }
-          document.getElementById('coin-count').textContent = user.coins.toString(); // Convert coins to string for display
+      // assumably That DOM is already loaded
+      console.log('loading user profile on oauth', user);
+      var usernameElement = user.username;
+      var username = usernameElement ? usernameElement.value : ''; // Check if the element exists
+      console.log('username', username);
+      if (username) {
+        console.log('User logged in via oauth:', user);
+        // Hide login form and show game menu
+        var loginForm = document.getElementById('login-form');
+        var loginOverlay = document.querySelector('.login-overlay');
+        if (loginForm && loginOverlay) {
+          loginForm.style.display = 'none'; // Ensure the login form is hidden
+          loginForm.classList.remove('visible');
+          loginOverlay.classList.remove('visible');
         }
-      })
+        // Show game menu
+        // document.getElementById('step-1').style.display = 'block'; 
 
+        // Display user profile
+        document.getElementById('username-display').classList.add('visible');
+        document.getElementById('username-display').style.display = 'block';
+
+        // Update User Profile Display
+        document.getElementById('username-text').textContent = user.username; // Ensure user.username is set
+        if (user.profile) {
+          // Check if user.profile is a valid URL
+          const img = new Image();
+          img.src = user.profile;
+          img.onload = function () {
+            document.getElementById('profile-picture').src = user.profile; // Update profile picture
+          };
+          img.onerror = function () {
+            console.log('Invalid profile picture URL, using default image');
+            document.getElementById('profile-picture').src = 'https://tzqzzuafkobkhygtccse.supabase.co/storage/v1/object/public/biz_touch/crypto-ql/ICON.png'; // Set a default image
+          };
+        }
+        document.getElementById('coin-count').textContent = user.coins.toString(); // Convert coins to string for display
+      }
     }
 
     console.log('Initializing load, checking game data');
