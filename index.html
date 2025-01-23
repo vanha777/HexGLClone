@@ -206,7 +206,9 @@
         };
       }
       let balance = user.coins.toString();
-      document.getElementById('coin-count').textContent = balance; // Convert coins to string for display
+      document.querySelectorAll('.coin-count').forEach(tokenCount => {
+        tokenCount.textContent = user.coins;
+      });
       if (game.token.symbol) {
         document.querySelectorAll('.token-name').forEach(tokenName => {
           tokenName.textContent = game.token.symbol + ":";
@@ -491,7 +493,7 @@
       <div class="shop-footer">
         <div class="token-info" style="display: flex; align-items: center;">
           <img id="token-logo" src="" alt="Token Logo" style="width: 40px; height: 40px; margin-right: 5px;">
-          <span id="coin-count" style="margin-left: 10px;">0</span>
+          <span id="coin-count" class="coin-count" style="margin-left: 10px;">0</span>
           <span id="token-name" class="coins" style="margin-left: 10px;">Token Name</span>
         </div>
         <button id="close-shop">Close</button>
@@ -650,7 +652,7 @@
       <span>Username: <span id="username-text">Guest</span></span>
       <div style="display: flex; flex-direction: row;">
         <span class="token-name">Coins: </span>
-        <span id="coin-count" style="margin-left: 10px;">0</span>
+        <span id="coin-count" class="coin-count" style="margin-left: 10px;">0</span>
       </div>
 
     </div>
