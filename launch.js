@@ -22,7 +22,9 @@
       hud: hud === 1,
       controlType: controlType,
       godmode: godmode,
-      track: 'Cityscape'
+      track: 'Cityscape',
+      user: JSON.parse(localStorage.getItem('user')),
+      game: JSON.parse(localStorage.getItem('game'))
     });
     window.hexGL = hexGL;
     console.log('Creating shop...'); // Debug shop creation
@@ -136,142 +138,142 @@
   // document.addEventListener('DOMContentLoaded', function () {
   //   console.log('Initializing load, checking user inner');
 
-    // User class to manage user data
-    // class User {
-    //   constructor() {
-    //     this.username = null;
-    //     this.profile = null;
-    //     this.wallet = null;
-    //     this.level = 1; // Default level
-    //     this.coins = 0; // Default coins
-    //     this.score = 0; // Default score
-    //   }
+  // User class to manage user data
+  // class User {
+  //   constructor() {
+  //     this.username = null;
+  //     this.profile = null;
+  //     this.wallet = null;
+  //     this.level = 1; // Default level
+  //     this.coins = 0; // Default coins
+  //     this.score = 0; // Default score
+  //   }
 
-    //   load() {
-    //     const userData = JSON.parse(localStorage.getItem('user'));
-    //     if (userData) {
-    //       this.username = userData.username;
-    //       this.profile = userData.profile;
-    //       this.wallet = userData.wallet;
-    //       this.level = userData.level;
-    //       this.coins = userData.coins;
-    //       this.score = userData.score;
-    //     }
-    //   }
+  //   load() {
+  //     const userData = JSON.parse(localStorage.getItem('user'));
+  //     if (userData) {
+  //       this.username = userData.username;
+  //       this.profile = userData.profile;
+  //       this.wallet = userData.wallet;
+  //       this.level = userData.level;
+  //       this.coins = userData.coins;
+  //       this.score = userData.score;
+  //     }
+  //   }
 
-    //   // Save user data to local storage
-    //   save() {
-    //     localStorage.setItem('user', JSON.stringify(this));
-    //   }
+  //   // Save user data to local storage
+  //   save() {
+  //     localStorage.setItem('user', JSON.stringify(this));
+  //   }
 
-    //   // Remove user data from local storage
-    //   remove() {
-    //     localStorage.removeItem('user');
-    //   }
-    // }
+  //   // Remove user data from local storage
+  //   remove() {
+  //     localStorage.removeItem('user');
+  //   }
+  // }
 
-    // Initialize user
-    // let user = new User(); // Default username
-    // user.load(); // Load user data
+  // Initialize user
+  // let user = new User(); // Default username
+  // user.load(); // Load user data
 
-    // Check if user data exists
-    // if (!user.username || user.username === 'Guest') {
-    //   console.log('No user data, showing login form');
-    //   document.getElementById('username-display').classList.remove('visible');
-    //   document.getElementById('username-display').style.display = 'none';
-    //   // Show login form and show game menu
-    //   var loginForm = document.getElementById('login-form');
-    //   var loginOverlay = document.querySelector('.login-overlay');
-    //   if (loginForm && loginOverlay) {
-    //     loginForm.style.display = 'block'; // Ensure the login form is hidden
-    //     loginForm.classList.add('visible');
-    //     loginOverlay.classList.add('visible');
-    //   }
+  // Check if user data exists
+  // if (!user.username || user.username === 'Guest') {
+  //   console.log('No user data, showing login form');
+  //   document.getElementById('username-display').classList.remove('visible');
+  //   document.getElementById('username-display').style.display = 'none';
+  //   // Show login form and show game menu
+  //   var loginForm = document.getElementById('login-form');
+  //   var loginOverlay = document.querySelector('.login-overlay');
+  //   if (loginForm && loginOverlay) {
+  //     loginForm.style.display = 'block'; // Ensure the login form is hidden
+  //     loginForm.classList.add('visible');
+  //     loginOverlay.classList.add('visible');
+  //   }
 
-    // } else {
-    //   console.log('User data exists, showing game menu', user.username);
-    //   // Hide login form and show game menu
-    //   var loginForm = document.getElementById('login-form');
-    //   var loginOverlay = document.querySelector('.login-overlay');
-    //   if (loginForm && loginOverlay) {
-    //     loginForm.style.display = 'none'; // Ensure the login form is hidden
-    //     loginForm.classList.remove('visible');
-    //     loginOverlay.classList.remove('visible');
-    //   }
-    //   document.getElementById('username-text').textContent = user.username;
-    //   document.getElementById('username-display').classList.add('visible');
-    //   document.getElementById('username-display').style.display = 'block';
-    //   // Update the shop with user coins
-    //   if (window.shop) {
-    //     window.shop.coins = user.coins;
-    //     document.getElementById('coin-count').textContent = user.coins;
-    //   }
-    // }
+  // } else {
+  //   console.log('User data exists, showing game menu', user.username);
+  //   // Hide login form and show game menu
+  //   var loginForm = document.getElementById('login-form');
+  //   var loginOverlay = document.querySelector('.login-overlay');
+  //   if (loginForm && loginOverlay) {
+  //     loginForm.style.display = 'none'; // Ensure the login form is hidden
+  //     loginForm.classList.remove('visible');
+  //     loginOverlay.classList.remove('visible');
+  //   }
+  //   document.getElementById('username-text').textContent = user.username;
+  //   document.getElementById('username-display').classList.add('visible');
+  //   document.getElementById('username-display').style.display = 'block';
+  //   // Update the shop with user coins
+  //   if (window.shop) {
+  //     window.shop.coins = user.coins;
+  //     document.getElementById('coin-count').textContent = user.coins;
+  //   }
+  // }
 
-    // // Handle login button click
-    // $('login-button').onclick = function () {
-    //   var usernameElement = document.getElementById('username');
-    //   var username = usernameElement ? usernameElement.value : ''; // Check if the element exists
-    //   if (username) {
-    //     user = new User(username);
-    //     user.save(); // Save user data
-    //     console.log('User logged in:', user.username);
-    //     // Hide login form and show game menu
-    //     var loginForm = document.getElementById('login-form');
-    //     var loginOverlay = document.querySelector('.login-overlay');
-    //     if (loginForm && loginOverlay) {
-    //       loginForm.style.display = 'none'; // Ensure the login form is hidden
-    //       loginForm.classList.remove('visible');
-    //       loginOverlay.classList.remove('visible');
-    //     }
-    //     document.getElementById('step-1').style.display = 'block'; // Show game menu
-    //     document.getElementById('username-display').classList.add('visible');
-    //     document.getElementById('username-display').style.display = 'block';
-    //     document.getElementById('username-text').textContent = user.username;
-    //   }
-    // };
+  // // Handle login button click
+  // $('login-button').onclick = function () {
+  //   var usernameElement = document.getElementById('username');
+  //   var username = usernameElement ? usernameElement.value : ''; // Check if the element exists
+  //   if (username) {
+  //     user = new User(username);
+  //     user.save(); // Save user data
+  //     console.log('User logged in:', user.username);
+  //     // Hide login form and show game menu
+  //     var loginForm = document.getElementById('login-form');
+  //     var loginOverlay = document.querySelector('.login-overlay');
+  //     if (loginForm && loginOverlay) {
+  //       loginForm.style.display = 'none'; // Ensure the login form is hidden
+  //       loginForm.classList.remove('visible');
+  //       loginOverlay.classList.remove('visible');
+  //     }
+  //     document.getElementById('step-1').style.display = 'block'; // Show game menu
+  //     document.getElementById('username-display').classList.add('visible');
+  //     document.getElementById('username-display').style.display = 'block';
+  //     document.getElementById('username-text').textContent = user.username;
+  //   }
+  // };
 
-    // $('logout-button').onclick = function (e) {
-    //   console.log('Logout button clicked');
-    //   e.preventDefault();
-    //   e.stopPropagation();
-    //   document.getElementById('username-display').classList.remove('visible');
-    //   document.getElementById('username-display').style.display = 'none';
-    //   document.getElementById('username-text').textContent = 'Guest';
-    //   // Initialize user
-    //   let user = new User('Guest'); // Default username
-    //   user.remove();
-    //   user.load(); // Load user data
-    //   // Check if user data exists
-    //   if (!user.username || user.username === 'Guest') {
-    //     console.log('No user data, showing login form');
-    //     document.getElementById('username-display').classList.remove('visible');
-    //     document.getElementById('username-display').style.display = 'none';
-    //     // Show login form and show game menu
-    //     var loginForm = document.getElementById('login-form');
-    //     var loginOverlay = document.querySelector('.login-overlay');
-    //     if (loginForm && loginOverlay) {
-    //       loginForm.style.display = 'block'; // Ensure the login form is hidden
-    //       loginForm.classList.add('visible');
-    //       loginOverlay.classList.add('visible');
-    //     }
-    //   }
-    // }
+  // $('logout-button').onclick = function (e) {
+  //   console.log('Logout button clicked');
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   document.getElementById('username-display').classList.remove('visible');
+  //   document.getElementById('username-display').style.display = 'none';
+  //   document.getElementById('username-text').textContent = 'Guest';
+  //   // Initialize user
+  //   let user = new User('Guest'); // Default username
+  //   user.remove();
+  //   user.load(); // Load user data
+  //   // Check if user data exists
+  //   if (!user.username || user.username === 'Guest') {
+  //     console.log('No user data, showing login form');
+  //     document.getElementById('username-display').classList.remove('visible');
+  //     document.getElementById('username-display').style.display = 'none';
+  //     // Show login form and show game menu
+  //     var loginForm = document.getElementById('login-form');
+  //     var loginOverlay = document.querySelector('.login-overlay');
+  //     if (loginForm && loginOverlay) {
+  //       loginForm.style.display = 'block'; // Ensure the login form is hidden
+  //       loginForm.classList.add('visible');
+  //       loginOverlay.classList.add('visible');
+  //     }
+  //   }
+  // }
 
-    // // Existing code for handling other events...
-    // $('s-shop').onclick = function (e) {
-    //   console.log('Shop button clicked');
-    //   e.preventDefault();
-    //   e.stopPropagation();
+  // // Existing code for handling other events...
+  // $('s-shop').onclick = function (e) {
+  //   console.log('Shop button clicked');
+  //   e.preventDefault();
+  //   e.stopPropagation();
 
-    //   var shopDialog = document.getElementById('shop-dialog');
-    //   var shopOverlay = document.querySelector('.shop-overlay');
+  //   var shopDialog = document.getElementById('shop-dialog');
+  //   var shopOverlay = document.querySelector('.shop-overlay');
 
-    //   if (shopDialog && shopOverlay) {
-    //     shopDialog.classList.add('visible');
-    //     shopOverlay.classList.add('visible');
-    //   }
-    // };
+  //   if (shopDialog && shopOverlay) {
+  //     shopDialog.classList.add('visible');
+  //     shopOverlay.classList.add('visible');
+  //   }
+  // };
   // });
 
 }).call(this);

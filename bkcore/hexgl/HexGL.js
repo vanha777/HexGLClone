@@ -13,8 +13,10 @@ bkcore.hexgl = bkcore.hexgl || {};
 
 bkcore.hexgl.HexGL = function(opts)
 {
+	console.log("launching game with : ", opts.user);
 	var self = this;
-
+	this.user = opts.user;
+	this.game = opts.game;
 	this.document = opts.document || document;
 
 	this.a = window.location.href;
@@ -150,7 +152,7 @@ bkcore.hexgl.HexGL.prototype.init = function()
 
 bkcore.hexgl.HexGL.prototype.load = function(opts)
 {
-	this.track.load(opts, this.quality);
+	this.track.load(this.game,this.user,opts, this.quality);
 }
 
 bkcore.hexgl.HexGL.prototype.initGameplay = function()
